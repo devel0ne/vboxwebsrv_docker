@@ -1,0 +1,31 @@
+version: '3.2'
+services:
+    vbox_http:
+        container_name: vbox_http
+        restart: always
+        ports:
+            - "10050:80"
+        environment:
+            ID_HOSTPORT: "vbox_websrv:18083"
+            ID_NAME: "TestServer"
+            ID_USER: "user"
+            ID_PW: "pass"
+            CONF_browserRestrictFolders: "/storage/disk01,/storage/disk02"
+            CONF_consoleHost: "rdp.hostname,com"
+#            CONF_noAuth: "true"
+        depends_on:
+            - vbox_websrv
+        image: jazzdd/phpvirtualbox:VBOX6.x
+
+    vbox_websrv:
+        container_name: vbox_websrv
+        restart: always
+        volumes:
+            - "./ssh:/root/.ssh"
+        environment:
+            USE_KEY: 1
+        build:
+          context: ./vbox_websrv/
+          dockerfile: Dockerfile
+        command: root@192.168.1.1
+
